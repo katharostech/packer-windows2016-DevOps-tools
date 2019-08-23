@@ -1,0 +1,34 @@
+{
+	"builders": [{
+            "type": "vmware-vmx",
+            "vm_name": "{{ user `vm_name` }}",
+            "display_name": "{{ user `vm_name` }}",
+            "source_path": "{{ user `vmx_path` }}",
+            "output_directory": "../builds/packer-{{user `template`}}-DevOps-tools-vmware",
+            "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+            "communicator": "winrm",
+            "winrm_username": "vagrant",
+            "winrm_password": "vagrant",
+			"winrm_timeout": "1h"
+		}
+	],
+	"provisioners": [{
+            "type": "file",
+            "source": "bin_res",
+            "destination": "C:/Users/vagrant/Downloads"
+        }
+	],
+	"post-processors": [
+		[{
+			"type": "vagrant",
+			"keep_input_artifact": true,
+			"output": "{{ user `template` }}-DevOps-tools-{{.Provider}}.box",
+            "vagrantfile_template": "vagrantfile-windows.template"
+		}]
+	],
+	"variables": {
+        "vm_name": "packer-win2016-DevOps-Tools",
+        "vmx_path": "{{env `WIN2016_DEVOPS_BASE_VMX_PATH`}}",
+		"template": "windows-2016-standard"
+	}
+}
